@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" strict="true">
+    <Properties>
+        <!-- 设置配置文件全局的参数变量 -->
+        <Property name="filepath">/Applications/IntelliJ IDEA.app/Contents/workspace/log/channel-access-server/</Property>
+    </Properties>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{yyyyMMddHHmmss} [%-5level][%t][%c{0} #%method()] %msg%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <RollingRandomAccessFile name="logService"
+                                 fileName="${filepath}/log4j_daily.log"
+                                 filePattern="${filepath}/log4j_daily.log.%d{yyyyMMdd}.gz">
+            <PatternLayout>
+                <Pattern>%d{yyyyMMddHHmmss} [%level][%t][%c{0} #%method()] %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="MpspAppender"
+                                 fileName="${filepath}/mpsp.log"
+                                 filePattern="${filepath}/mpsp.log.%d{yyyyMMdd}.gz">
+            <PatternLayout>
+                <Pattern>%d{yyyyMMddHHmmss},%msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <!-- 单独设置某个包的日志级别 -->
+        <!-- mybatis sql日志打印 -->
+        <logger name="com.umpay.mapper" level="debug"></logger>
+        <!-- 将druid连接池的sql语句打印到日志文件中 -->
+        <logger name="druid.sql.Statement" level="debug" additivity="false">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="logService"/>
+        </logger>
+        <logger name="MPSP" level="INFO">
+            <appender-ref ref="MpspAppender"/>
+        </logger>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="logService"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
